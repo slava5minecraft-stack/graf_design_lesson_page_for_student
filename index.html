@@ -11,7 +11,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Golos+Text:wght@400;500;600;700&family=PT+Mono&display=swap" rel="stylesheet">
 <style>
 :root{
-  --html{color-scheme: light only;}
   --paper:#EAE8DB; --paper2:#DFDCCB; --card:#F2F0E4;
   --ink:#141B38; --ink2:#2A3152; --night:#12141C; --night2:#1B1E2A;
   --accent:#F4693B; --accent2:#FF8A5C;
@@ -26,6 +25,8 @@
   --body:'Golos Text',system-ui,sans-serif;
   --mono:'PT Mono',ui-monospace,monospace;
 }
+/* принудительная светлая схема: браузер не может переключить сайт в тёмную */
+html{color-scheme: light only;}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;overflow-x:hidden}
@@ -177,6 +178,9 @@ nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:100;
 .chip:active{transform:translateY(1px);box-shadow:0 1px 0 var(--ink);}
 .chip .sw{width:16px;height:16px;border-radius:5px;border:2px solid var(--ink);}
 .chip.on{background:var(--ink);color:var(--paper);}
+/* кнопки-переходы (Правила / Уроки / Файлы) — те же чипы, но ссылки */
+.prog-nav{margin-top:14px;}
+a.chip{text-decoration:none;color:var(--ink);}
 .prog-robi{position:absolute;inset:0;z-index:1;pointer-events:none;}
 .prog-robi video{position:absolute;left:0;top:50%;transform:translateY(-50%) translate(var(--x,0px),var(--y,0px));width:110%;height:auto;max-width:none;display:block;filter:drop-shadow(0 20px 22px rgba(20,27,56,.2));}
 @media(max-width:900px){
@@ -185,8 +189,6 @@ nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:100;
   .prog-robi{position:relative;inset:auto;margin-top:22px;}
   .prog-robi video{position:static;transform:none;width:100%;}
 }
-
-
 
 /* ---------- FOOTER ---------- */
 footer{background:var(--ink);color:var(--paper);padding:60px 0 40px}
@@ -223,7 +225,6 @@ footer{background:var(--ink);color:var(--paper);padding:60px 0 40px}
       <a href="#programs" data-spy="programs">ПРОГРАММЫ</a>
     </div>
     <button id="sndBtn" aria-pressed="true" title="Звук интерфейса"><span class="dot"></span><span id="sndLabel">ЗВУК ВКЛ</span></button>
-    
   </div>
 </nav>
 
@@ -293,10 +294,14 @@ footer{background:var(--ink);color:var(--paper);padding:60px 0 40px}
   <div class="wrap">
     <div class="prog-grid">
       <div class="prog-copy">
-        
         <h2>Выбери программу —<br>Роби покажет бросок</h2>
         <p class="prog-note">Каждая программа говорит на своём языке движения: растр рассыпается в пиксели, вектор скользит по кривой, макет встаёт по сетке, 3D набирает объём. Нажми на программу — Роби поймает её иконку.</p>
         <div class="chips" id="chips" role="tablist" aria-label="Программы"></div>
+        <div class="chips prog-nav" aria-label="Разделы пособия">
+          <a class="chip" href="#rules"><span class="sw" style="background:var(--info)"></span>Правила</a>
+          <a class="chip" href="#lessons"><span class="sw" style="background:var(--accent)"></span>Уроки</a>
+          <a class="chip" href="#files"><span class="sw" style="background:var(--ok)"></span>Файлы</a>
+        </div>
       </div>
       <div class="prog-robi">
         <video id="progVideo" src="фотошоп_бросок.webm" autoplay loop muted playsinline preload="auto" aria-label="Роби ловит иконку программы"></video>
@@ -305,15 +310,12 @@ footer{background:var(--ink);color:var(--paper);padding:60px 0 40px}
   </div>
 </section>
 
-
-
 <footer>
   <div class="wrap">
     <div class="sponsors">
      <b>Губернский колледж стремиться создать лучшую среду для роста и развития студентов</b>
     </div>
     <div class="foot-grid">
-      
       <button id="toTop">НАВЕРХ ↑</button>
     </div>
   </div>
@@ -408,10 +410,13 @@ function selectProgram(p){
 }
 selectProgram('ps');
 
+/* ============ NAV-CHIPS (звук на переходах) ============ */
+$$('.prog-nav a.chip').forEach(a=>a.addEventListener('mouseenter',()=>sfx.hover()));
+
 /* ============ MAIN LOOP ============ */
 let last=performance.now();
 function loop(now){ const dt=Math.min((now-last)/1000,.05); last=now;
- stepTweens(dt); gameFrame(dt);
+ stepTweens(dt);
  requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
